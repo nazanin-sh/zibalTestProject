@@ -11,7 +11,7 @@ const SearchInput = ({ placeholder, onSearch, value, label }) => {
   return (
     <div className="flex items-center justify-center h-10">
       <div
-        className="flex items-center justify-center w-8 h-6 bg-blue-950 ml-2 rounded-md cursor-pointer"
+        className="flex items-center justify-center w-8 h-6 bg-blue-700 ml-2 rounded-md cursor-pointer"
         onClick={toggleInputVisibility}
       >
         <SearchOutlined className=" text-white" />
