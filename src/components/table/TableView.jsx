@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import './TableView.css'; 
-import { Table } from "antd";
-import tejaratLogo from "../../assets/img/tejartLogo.png";
 import { CopyOutlined } from "@ant-design/icons";
+import { Table } from "antd";
 import moment from "moment-jalaali";
 import "moment/locale/fa";
+import tejaratLogo from "../../assets/img/tejartLogo.png";
+import SearchInput from "../searchInput/SearchInput";
+import "./TableView.css";
 const monthNames = [
   "فروردین",
   "اردیبهشت",
@@ -25,9 +26,61 @@ const getPersianMonthName = (monthNumber) => {
 };
 function TableView() {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [cardSearchText, setCardSearchText] = useState("");
+
+  useEffect(() => {
+    fetch("/data.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data.data);
+        setFilteredData(data.data);
+      })
+      .catch((error) => console.error("Error fetching the data:", error));
+  }, []);
+
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+    filterData(e.target.value, cardSearchText);
+  };
+
+  const handleCardSearch = (e) => {
+    setCardSearchText(e.target.value);
+    filterData(searchText, e.target.value);
+  };
+
+  const filterData = (searchValue, cardValue) => {
+    let newData = data;
+    if (searchValue) {
+      newData = newData.filter((item) =>
+        item.trackId
+          .toString()
+          .toLowerCase()
+          .includes(searchValue.toLowerCase())
+      );
+    }
+    if (cardValue) {
+      newData = newData.filter((item) =>
+        item.cardNumber
+          .toString()
+          .toLowerCase()
+          .includes(cardValue.toLowerCase())
+      );
+    }
+    setFilteredData(newData);
+  };
+ 
   const columns = [
     {
-      title: "شماره تراکنش",
+      title: (
+        <SearchInput
+          placeholder="جستجو شماره تراکنش"
+          onSearch={handleSearch}
+          value={searchText}
+          label={"شماره تراکنش"}
+        />
+      ),
       dataIndex: "trackId",
       key: "trackId",
       align: "center",
@@ -90,7 +143,14 @@ function TableView() {
       ),
     },
     {
-      title: "شماره کارت",
+      title: (
+        <SearchInput
+          placeholder="جستجو شماره کارت"
+          onSearch={handleCardSearch}
+          value={cardSearchText}
+          label={"شماره کارت"}
+        />
+      ),
       dataIndex: "cardNumber",
       key: "cardNumber",
       align: "center",
@@ -103,21 +163,19 @@ function TableView() {
     },
   ];
 
-  useEffect(() => {
-    fetch("/data.json")
-      .then((response) => response.json())
-      .then((data) => setData(data.data))
-      .catch((error) => console.error("Error fetching the data:", error));
-  }, []);
   const footer = () => {
     return (
-      <div className="text-right font-bold">تعداد نتایج : {data.length}</div>
+      <div className="text-right font-bold">
+        تعداد نتایج : {filteredData.length}
+      </div>
     );
   };
+
+  
   return (
     <>
       <Table
-        dataSource={data}
+        dataSource={filteredData}
         columns={columns}
         footer={footer}
         pagination={false}
