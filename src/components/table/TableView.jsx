@@ -1,0 +1,130 @@
+import React, { useEffect, useState } from "react";
+import './TableView.css'; 
+import { Table } from "antd";
+import tejaratLogo from "../../assets/img/tejartLogo.png";
+import { CopyOutlined } from "@ant-design/icons";
+import moment from "moment-jalaali";
+import "moment/locale/fa";
+const monthNames = [
+  "فروردین",
+  "اردیبهشت",
+  "خرداد",
+  "تیر",
+  "مرداد",
+  "شهریور",
+  "مهر",
+  "آبان",
+  "آذر",
+  "دی",
+  "بهمن",
+  "اسفند",
+];
+
+const getPersianMonthName = (monthNumber) => {
+  return monthNames[monthNumber - 1] || "";
+};
+function TableView() {
+  const [data, setData] = useState([]);
+  const columns = [
+    {
+      title: "شماره تراکنش",
+      dataIndex: "trackId",
+      key: "trackId",
+      align: "center",
+      render: (text) => (
+        <div className="flex items-center justify-center">
+          <div className="flex items-center ml-2 h-8">{text}</div>
+          <CopyOutlined className="text-base text-blue-950" />
+        </div>
+      ),
+    },
+    {
+      title: "وضعیت تراکنش",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      render: (text) => (
+        <div className="flex items-baseline justify-center">
+          {text === 1 ? (
+            <>
+              <div className="bg-green-700 h-2 w-2 rounded"></div>
+              <div className="mr-2">پرداخت موفق</div>
+            </>
+          ) : (
+            <>
+              <div className="bg-red-700 h-2 w-2 rounded"></div>
+              <div className="mr-2">پرداخت ناموفق</div>
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "تاریخ پرداخت",
+      dataIndex: "paidAt",
+      key: "paidAt",
+      align: "center",
+      render: (text) => {
+        const date = moment(text, "jYYYY/jMM/jDD-HH:mm:ss");
+        const day = date.format("jD");
+        const month = getPersianMonthName(date.jMonth() + 1); // jMonth() is 0-based
+        const year = date.format("jYYYY");
+        const time = date.format("HH:mm");
+        return (
+          <span>
+            {day} {month} {year} {time}
+          </span>
+        );
+      },
+    },
+    {
+      title: "مبلغ",
+      dataIndex: "amount",
+      key: "amount",
+      align: "center",
+      render: (text) => (
+        <>
+          {parseInt(text).toLocaleString("fa-IR")}
+          <span className="text-gray-900">ریال</span>
+        </>
+      ),
+    },
+    {
+      title: "شماره کارت",
+      dataIndex: "cardNumber",
+      key: "cardNumber",
+      align: "center",
+      render: (text) => (
+        <div className="flex items-center justify-center">
+          <div className="flex items-center ml-2 h-8">{text}</div>
+          <img alt="bankLogo" src={tejaratLogo} width="25" height="20" />
+        </div>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    fetch("/data.json")
+      .then((response) => response.json())
+      .then((data) => setData(data.data))
+      .catch((error) => console.error("Error fetching the data:", error));
+  }, []);
+  const footer = () => {
+    return (
+      <div className="text-right font-bold">تعداد نتایج : {data.length}</div>
+    );
+  };
+  return (
+    <>
+      <Table
+        dataSource={data}
+        columns={columns}
+        footer={footer}
+        pagination={false}
+        className="custom-table"
+      />
+    </>
+  );
+}
+
+export default TableView;

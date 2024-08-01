@@ -1,0 +1,22 @@
+.custom-table .ant-table-thead > tr > th {
+    border-radius: 0 !important;
+    background-color: #a1a2a5; /* Blue background color */
+    font-weight: bold; /* Optional: Makes header text bold */
+  }
+
+  .custom-table .ant-table-cell::before{
+    display: none;
+  }
+  .custom-table .ant-table-row:nth-child(even) {
+    background-color: #f0f0f0; /* Light gray background for even rows */
+  }
+  
+  /* Target odd rows of the table */
+  .custom-table .ant-table-row:nth-child(odd) {
+    background-color: #ffffff; /* White background for odd rows */
+  }
+  
+  /* Optional: Add hover effect */
+  .custom-table .ant-table-row:hover {
+    background-color: #e6f7ff; /* Light blue background on hover */
+  }
