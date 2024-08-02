@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CopyOutlined } from "@ant-design/icons";
-import { Table } from "antd";
+import { Table, Row, Col } from "antd";
 import moment from "moment-jalaali";
 import "moment/locale/fa";
 import tejaratLogo from "../../assets/img/tejartLogo.png";
@@ -24,7 +24,6 @@ const monthNames = [
 const getPersianMonthName = (monthNumber) => {
   return monthNames[monthNumber - 1] || "";
 };
-
 
 function TableView() {
   const [data, setData] = useState([]);
@@ -72,7 +71,7 @@ function TableView() {
     }
     setFilteredData(newData);
   };
- 
+
   const columns = [
     {
       title: (
@@ -167,22 +166,27 @@ function TableView() {
 
   const footer = () => {
     return (
-      <div className="text-right font-bold">
+      <div className="text-right font-bold w-full">
         تعداد نتایج : {filteredData.length}
       </div>
     );
   };
 
-
   return (
     <>
-      <Table
-        dataSource={filteredData}
-        columns={columns}
-        footer={footer}
-        pagination={false}
-        className="custom-table"
-      />
+      <div className="lg:overflow-hidden xs:overflow-x-auto">
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Table
+              dataSource={filteredData}
+              columns={columns}
+              footer={footer}
+              pagination={false}
+              className="custom-table"
+            />
+          </Col>
+        </Row>
+      </div>
     </>
   );
 }
